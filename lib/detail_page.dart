@@ -85,3 +85,5 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 }
+
+//tes satria
