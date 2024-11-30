@@ -1,5 +1,6 @@
-// pages/detail_page.dart
+// detail_page.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'activity.dart';
 
 class DetailPage extends StatefulWidget {
@@ -18,6 +19,13 @@ class _DetailPageState extends State<DetailPage> {
   late TextEditingController detailsController;
   late TextEditingController noteController;
 
+  DateTime? reminder;
+
+  String formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return "Set Reminder";
+    return DateFormat('dd-MM-yyyy HH:mm').format(dateTime);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +33,7 @@ class _DetailPageState extends State<DetailPage> {
     timeController = TextEditingController(text: widget.activity.time);
     detailsController = TextEditingController(text: widget.activity.details);
     noteController = TextEditingController(text: widget.activity.note);
+    reminder = widget.activity.reminder;
   }
 
   void saveChanges() {
@@ -33,6 +42,7 @@ class _DetailPageState extends State<DetailPage> {
       widget.activity.time = timeController.text;
       widget.activity.details = detailsController.text;
       widget.activity.note = noteController.text;
+      widget.activity.reminder = reminder;
     });
     Navigator.pop(context, true);
   }
@@ -40,6 +50,32 @@ class _DetailPageState extends State<DetailPage> {
   void deleteActivity() {
     widget.onDelete();
     Navigator.pop(context, true);
+  }
+
+  void changeReminder() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: reminder ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(reminder ?? DateTime.now()),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          reminder = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 
   @override
@@ -51,7 +87,7 @@ class _DetailPageState extends State<DetailPage> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: deleteActivity,
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -73,6 +109,11 @@ class _DetailPageState extends State<DetailPage> {
             TextField(
               controller: noteController,
               decoration: InputDecoration(labelText: "Catatan Tambahan"),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: changeReminder,
+              child: Text(formatDateTime(reminder)),
             ),
             SizedBox(height: 20),
             ElevatedButton(
