@@ -1,83 +1,111 @@
-// pages/detail_page.dart
 import 'package:flutter/material.dart';
-import 'activity.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firestore.dart';
 
-class DetailPage extends StatefulWidget {
-  final Activity activity;
-  final VoidCallback onDelete;
+class DetailActivityPage extends StatefulWidget {
+  final String activityId;
+  final String initialtitle;
+  final String initiallocation;
+  final String initialdescription;
+  final String initialnotes;
+  final Timestamp initialdateTime;
 
-  DetailPage({required this.activity, required this.onDelete});
+  const DetailActivityPage({
+    super.key,
+    required this.activityId,
+    required this.initialtitle,
+    required this.initiallocation,
+    required this.initialdescription,
+    required this.initialnotes,
+    required this.initialdateTime,
+  });
 
   @override
-  _DetailPageState createState() => _DetailPageState();
+  State<DetailActivityPage> createState() => _DetailActivityPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
-  late TextEditingController nameController;
-  late TextEditingController timeController;
-  late TextEditingController detailsController;
-  late TextEditingController noteController;
+class _DetailActivityPageState extends State<DetailActivityPage> {
+  late TextEditingController titleController;
+  late TextEditingController locationController;
+  late TextEditingController descriptionController;
+  late TextEditingController notesController;
+  late DateTime dateTime;
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(text: widget.activity.name);
-    timeController = TextEditingController(text: widget.activity.time);
-    detailsController = TextEditingController(text: widget.activity.details);
-    noteController = TextEditingController(text: widget.activity.note);
+    titleController = TextEditingController(text: widget.initialtitle);
+    locationController = TextEditingController(text: widget.initiallocation);
+    descriptionController = TextEditingController(text: widget.initialdescription);
+    notesController = TextEditingController(text: widget.initialnotes);
+    dateTime = (widget.initialdateTime as Timestamp).toDate();
   }
 
-  void saveChanges() {
-    setState(() {
-      widget.activity.name = nameController.text;
-      widget.activity.time = timeController.text;
-      widget.activity.details = detailsController.text;
-      widget.activity.note = noteController.text;
-    });
-    Navigator.pop(context, true);
-  }
-
-  void deleteActivity() {
-    widget.onDelete();
-    Navigator.pop(context, true);
+  @override
+  void dispose() {
+    titleController.dispose();
+    locationController.dispose();
+    descriptionController.dispose();
+    notesController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail Aktivitas"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: deleteActivity,
-          )
-        ],
+        title: const Text('Detail Activity'),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: "Nama Kegiatan"),
+              controller: titleController,
+              decoration: InputDecoration(labelText: 'Title'),
             ),
             TextField(
-              controller: timeController,
-              decoration: InputDecoration(labelText: "Jam Kegiatan"),
+              controller: locationController,
+              decoration: InputDecoration(labelText: 'Location'),
             ),
             TextField(
-              controller: detailsController,
-              decoration: InputDecoration(labelText: "Detail Kegiatan"),
+              controller: descriptionController,
+              decoration: InputDecoration(labelText: 'Description'),
+              maxLines: 3,
             ),
             TextField(
-              controller: noteController,
-              decoration: InputDecoration(labelText: "Catatan Tambahan"),
+              controller: notesController,
+              decoration: InputDecoration(labelText: 'Notes'),
+              maxLines: 3,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Date & Time ${DateFormat('yyyy-MM-dd – HH:mm').format(dateTime)}',
+              style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: saveChanges,
-              child: Text("Simpan Perubahan"),
+              onPressed: () async {
+                final updatedtitle = titleController.text;
+                final updatedlocation = locationController.text;
+                final updateddescription = descriptionController.text;
+                final updatednotes = notesController.text;
+
+                if (titleController.text.isNotEmpty) {
+                  await _firestoreService.updateActivity(
+                    widget.activityId, 
+                    updatedtitle, 
+                    updatedlocation, 
+                    updateddescription, 
+                    updatednotes
+                  );
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('Save Changes'),
             ),
           ],
         ),

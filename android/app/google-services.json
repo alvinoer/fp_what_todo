@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "64876880789",
+    "project_id": "what-to-do-f74dc",
+    "storage_bucket": "what-to-do-f74dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64876880789:android:033d7e9c50fc6f6468cc9c",
+        "android_client_info": {
+          "package_name": "com.whattodo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUlTidpcYlUf3UzCoQ2RoUErU0P1cCanc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
