@@ -59,55 +59,131 @@ class _DetailActivityPageState extends State<DetailActivityPage> {
         title: const Text('Detail Activity'),
         backgroundColor: Colors.blueAccent,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(labelText: 'Title'),
-            ),
-            TextField(
-              controller: locationController,
-              decoration: InputDecoration(labelText: 'Location'),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-              maxLines: 3,
-            ),
-            TextField(
-              controller: notesController,
-              decoration: InputDecoration(labelText: 'Notes'),
-              maxLines: 3,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Date & Time ${DateFormat('yyyy-MM-dd – HH:mm').format(dateTime)}',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                final updatedtitle = titleController.text;
-                final updatedlocation = locationController.text;
-                final updateddescription = descriptionController.text;
-                final updatednotes = notesController.text;
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.lightBlueAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title Field
+              buildLabel("Title"),
+              buildDecoratedTextField(titleController),
+              const SizedBox(height: 12),
 
-                if (titleController.text.isNotEmpty) {
-                  await _firestoreService.updateActivity(
-                    widget.activityId, 
-                    updatedtitle, 
-                    updatedlocation, 
-                    updateddescription, 
-                    updatednotes
-                  );
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Save Changes'),
+              // Location Field
+              buildLabel("Location"),
+              buildDecoratedTextField(locationController),
+              const SizedBox(height: 12),
+
+              // Description Field
+              buildLabel("Description"),
+              buildDecoratedTextField(descriptionController, maxLines: 3),
+              const SizedBox(height: 12),
+
+              // Notes Field
+              buildLabel("Notes"),
+              buildDecoratedTextField(notesController, maxLines: 3),
+              const SizedBox(height: 20),
+
+              // Date and Time
+              Text(
+                'Date & Time: ${DateFormat('yyyy-MM-dd – HH:mm').format(dateTime)}',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+
+              // Save Button
+              Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () async {
+                      final updatedtitle = titleController.text;
+                      final updatedlocation = locationController.text;
+                      final updateddescription = descriptionController.text;
+                      final updatednotes = notesController.text;
+
+                      if (titleController.text.isNotEmpty) {
+                        await _firestoreService.updateActivity(
+                          widget.activityId,
+                          updatedtitle,
+                          updatedlocation,
+                          updateddescription,
+                          updatednotes,
+                        );
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      'Save Changes',
+                      style: TextStyle(color: Colors.blueAccent, fontSize: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Label Widget
+  Widget buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              color: Colors.black26,
+              blurRadius: 2,
+              offset: Offset(0, 1),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Decorated TextField
+  Widget buildDecoratedTextField(TextEditingController controller, {int maxLines = 1}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          border: InputBorder.none,
         ),
       ),
     );
