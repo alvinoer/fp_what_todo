@@ -38,7 +38,8 @@ class _DetailActivityPageState extends State<DetailActivityPage> {
     super.initState();
     titleController = TextEditingController(text: widget.initialtitle);
     locationController = TextEditingController(text: widget.initiallocation);
-    descriptionController = TextEditingController(text: widget.initialdescription);
+    descriptionController =
+        TextEditingController(text: widget.initialdescription);
     notesController = TextEditingController(text: widget.initialnotes);
     dateTime = (widget.initialdateTime as Timestamp).toDate();
   }
@@ -95,7 +96,10 @@ class _DetailActivityPageState extends State<DetailActivityPage> {
               // Date and Time
               Text(
                 'Date & Time: ${DateFormat('yyyy-MM-dd – HH:mm').format(dateTime)}',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
               const SizedBox(height: 20),
 
@@ -165,7 +169,8 @@ class _DetailActivityPageState extends State<DetailActivityPage> {
   }
 
   // Decorated TextField
-  Widget buildDecoratedTextField(TextEditingController controller, {int maxLines = 1}) {
+  Widget buildDecoratedTextField(TextEditingController controller,
+      {int maxLines = 1}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
